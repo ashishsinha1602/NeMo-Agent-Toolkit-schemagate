@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+# The same workflow against a local Ollama server (OpenAI-compatible endpoint). No API key.
+#   ollama pull qwen2.5:3b
+#   pip install nvidia-nat-langchain
+#   nat run --config_file examples/config_ollama.yml --input "Which tables do I need for late shipments by carrier?"
+
+function_groups:
+  schemagate:
+    _type: schemagate
+    database_url: demo
+    top_k: 6
+
+llms:
+  local_llm:
+    _type: openai
+    base_url: http://localhost:11434/v1
+    api_key: ollama
+    model_name: qwen2.5:3b
+    temperature: 0.0
+
+workflow:
+  _type: react_agent
+  llm_name: local_llm
+  tool_names:
+    - schemagate
+  verbose: true

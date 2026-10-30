@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# schemagate tools for a ReAct agent, on schemagate's bundled demo schema.
+#   export NVIDIA_API_KEY=...
+#   nat run --config_file examples/config.yml --input "Which tables do I need for late shipments by carrier?"
+
+function_groups:
+  schemagate:
+    _type: schemagate
+    database_url: demo
+    top_k: 6
+
+llms:
+  my_llm:
+    _type: nim
+    model_name: meta/llama-3.3-70b-instruct
+    temperature: 0.0
+
+workflow:
+  _type: react_agent
+  llm_name: my_llm
+  tool_names:
+    - schemagate
+  verbose: true

@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# schemagate as a native toolkit retriever, exposed as a tool through the built-in nat_retriever function.
+# The caller is fixed in the retriever config: this one may read payroll tables.
+
+retrievers:
+  payroll_schema:
+    _type: schemagate
+    database_url: demo
+    principal: okta:payroll_user
+    roles: [payroll]
+    top_k: 6
+
+functions:
+  schema_lookup:
+    _type: nat_retriever
+    retriever: payroll_schema
+    topic: the database schema (tables and columns) for writing SQL
+    description: Returns the DDL of the tables and views a data question needs.
+
+llms:
+  local_llm:
+    _type: openai
+    base_url: http://localhost:11434/v1
+    api_key: ollama
+    model_name: qwen2.5:3b
+    temperature: 0.0
+
+workflow:
+  _type: react_agent
+  llm_name: local_llm
+  tool_names:
+    - schema_lookup
